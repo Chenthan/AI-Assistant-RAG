@@ -1,0 +1,45 @@
+version: "3.8"
+
+services:
+  app:
+    build: .
+    container_name: ai-assistant-app
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    volumes:
+      - ./data:/app/data
+      - ./chroma_db:/app/chroma_db
+    depends_on:
+      - redis
+      - mongo
+    restart: always
+
+  redis:
+    image: redis:7.2
+    container_name: ai-redis
+    ports:
+      - "6379:6379"
+    restart: always
+
+  mongo:
+    image: mongo:7.0
+    container_name: ai-mongo
+    ports:
+      - "27017:27017"
+    restart: always
+
+  # Optional: Ollama container (for Linux only)
+  # ollama:
+  #   image: ollama/ollama
+  #   container_name: ai-ollama
+  #   ports:
+  #     - "11434:11434"
+  #   volumes:
+  #     - ollama:/root/.ollama
+  #   restart: always
+
+volumes:
+  chroma_db:
+  # ollama:  # Enable if you use the Ollama container
