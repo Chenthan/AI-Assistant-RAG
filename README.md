@@ -8,7 +8,7 @@ A **private, personal AI assistant** built using Retrieval-Augmented Generation 
 
 ### 🔹 Document Ingestion & Chunking
 - Supports **PDF** and **plain text** uploads
-- **Efficient chunking** using LangChain’s `RecursiveCharacterTextSplitter`
+- **Efficient chunking** using LangChain's `RecursiveCharacterTextSplitter`
 - Chunks include metadata: `document_name`, `upload_time`
 
 ### 🔹 Vector Storage & Retrieval
@@ -24,7 +24,7 @@ A **private, personal AI assistant** built using Retrieval-Augmented Generation 
 ### 🔹 Memory & Catalog
 - Stores document metadata (name, path, upload time, chunk count, summary) in MongoDB
 - Automatically **summarizes** each document on upload
-- Makes the assistant **“aware” of available documents**
+- Makes the assistant **"aware" of available documents**
 
 ### 🔹 Smart Query Handling
 - Intelligent document detection via **summary embedding similarity**
@@ -45,20 +45,20 @@ A **private, personal AI assistant** built using Retrieval-Augmented Generation 
 
 ---
 
-## 💻 Tech Stack
+## 🛠️ Tech Stack
 
-| Layer               | Tools & Libraries |
-|---------------------|--------------------|
-| API Framework       | FastAPI, Uvicorn |
-| File Ingestion      | `pypdf` |
-| Chunking            | `langchain.text_splitter` |
-| Embeddings          | `OllamaEmbeddings` |
-| Vector Store        | ChromaDB (via `langchain-community`) |
-| LLM Backend         | Ollama (local LLM) |
-| Caching             | Redis |
-| Metadata Storage    | MongoDB (`motor`) |
-| Orchestration       | `langchain`, `langchain-ollama` |
-| Utilities           | `python-dotenv`, `aiofiles`, `logging` |
+| Layer               | Tools & Libraries                |
+|---------------------|----------------------------------|
+| API Framework       | FastAPI, Uvicorn                 |
+| File Ingestion      | pypdf                            |
+| Chunking            | langchain.text_splitter          |
+| Embeddings & LLM    | langchain-ollama, Ollama         |
+| Vector Store        | ChromaDB (langchain-chroma)      |
+| Caching             | Redis                            |
+| Metadata Storage    | MongoDB (motor)                  |
+| Orchestration       | langchain                        |
+| Config Management   | python-dotenv                    |
+| Logging             | logging (Python stdlib)          |
 
 ---
 
