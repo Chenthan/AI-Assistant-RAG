@@ -1,140 +1,129 @@
-# Personal AI Assistant
+# 🎯 AI-Assistant-RAG
 
-This project is a backend service for a personal AI assistant. It leverages Retrieval-Augmented Generation (RAG) to answer questions based on documents you provide. You can upload files, and the system will ingest them into a vector database, allowing you to query their content using a large language model.
+A **private, personal AI assistant** built using Retrieval-Augmented Generation (RAG). Upload your own documents and let the assistant answer questions *contextually*, with awareness of available files, summaries, and intelligent retrieval.
 
-## Features
+---
 
-- **File Ingestion**: Upload PDF files through a REST API endpoint.
-- **Vector Embeddings**: Automatically processes and stores file content in a ChromaDB vector store.
-- **RAG Pipeline**: Uses LangChain to orchestrate a Retrieval-Augmented Generation pipeline with Ollama.
-- **Question Answering**: Ask questions about your documents through a simple API.
-- **Caching**: Caches responses with Redis to provide instant answers for repeated queries.
-- **Async API**: Built with FastAPI for high performance.
+## 🚀 Features
 
-## Project Structure
+### 🔹 Document Ingestion & Chunking
+- Supports **PDF** and **plain text** uploads
+- **Efficient chunking** using LangChain’s `RecursiveCharacterTextSplitter`
+- Chunks include metadata: `document_name`, `upload_time`
 
-```
-.
-├── backend/
-│   ├── api/                  # FastAPI endpoints (file_upload.py, query_handler.py)
-│   ├── ingestion/            # File reading and text chunking
-│   ├── retrieval/            # ChromaDB and retrieval logic
-│   ├── cache/                # Redis utilities
-│   ├── llm/                  # Ollama and LangChain integration
-│   ├── utils/                # Common utilities (logging, etc.)
-│   └── main.py               # FastAPI app factory
-├── data/                     # Default directory for uploaded files
-├── chroma_db/                # Default directory for ChromaDB persistence
-├── .env                      # Environment variables
-└── requirements.txt
-```
+### 🔹 Vector Storage & Retrieval
+- Uses **ChromaDB** vector store to store embeddings
+- Supports **filtered retrieval** by document name
+- Supports **semantic retrieval** across all documents
 
-## Getting Started
+### 🔹 LLM Integration
+- Powered by **Ollama** (local LLM) via `langchain-ollama`
+- Enhanced prompt engineering to include document context
+- **Cached responses** using Redis for faster repeat queries
 
-Follow these instructions to set up and run the project locally.
+### 🔹 Memory & Catalog
+- Stores document metadata (name, path, upload time, chunk count, summary) in MongoDB
+- Automatically **summarizes** each document on upload
+- Makes the assistant **“aware” of available documents**
 
-### Prerequisites
+### 🔹 Smart Query Handling
+- Intelligent document detection via **summary embedding similarity**
+- Retrieval filters queries to appropriate document chunks
+- Graceful fallback when no relevant document is identified
 
-- Python 3.9+
-- [Ollama](https://ollama.com/) installed and running.
-- A running Redis instance.
+---
 
-### 1. Clone the Repository
+## 🏗️ Architecture & Flow
 
+1. **Upload** → ingest, chunk, embed, store in ChromaDB (with metadata)
+2. **Summarize** → generate a short summary for each uploaded document
+3. **Store metadata** → MongoDB (`documents` collection)
+4. **Query** → detect relevant document via summary similarity  
+   → retrieve filtered chunks  
+   → send context + query to LLM  
+   → return answer (cached for next time)
+
+---
+
+## 💻 Tech Stack
+
+| Layer               | Tools & Libraries |
+|---------------------|--------------------|
+| API Framework       | FastAPI, Uvicorn |
+| File Ingestion      | `pypdf` |
+| Chunking            | `langchain.text_splitter` |
+| Embeddings          | `OllamaEmbeddings` |
+| Vector Store        | ChromaDB (via `langchain-community`) |
+| LLM Backend         | Ollama (local LLM) |
+| Caching             | Redis |
+| Metadata Storage    | MongoDB (`motor`) |
+| Orchestration       | `langchain`, `langchain-ollama` |
+| Utilities           | `python-dotenv`, `aiofiles`, `logging` |
+
+---
+
+## 📋 Quickstart Guide
+
+### 1. Clone & set up environment
 ```bash
-git clone <your-repository-url>
-cd personal-ai-assistant
-```
-
-### 2. Create a Virtual Environment
-
-It's recommended to use a virtual environment to manage dependencies.
-
-```bash
+git clone https://github.com/Chenthan/AI-Assistant-RAG.git
+cd AI-Assistant-RAG
 python -m venv .venv
-source .venv/bin/activate  # On Windows, use `.venv\Scripts\activate`
+source .venv/bin/activate
 ```
-
-### 3. Install Dependencies
-
-Install all the required packages from `requirements.txt`.
-
+### 2. Install dependencies
 ```bash
 pip install -r requirements.txt
 ```
-
-### 4. Set Up Ollama
-
-Pull a model for the assistant to use. We recommend `mistral` or `llama3`.
-
+### 3. Run pre-req services
+Make sure you have Docker Desktop running:
 ```bash
-ollama pull mistral
+docker run -d --name redis -p 6379:6379 redis
+docker run -d --name mongo -p 27017:27017 mongo
 ```
-
-### 5. Configure Environment Variables
-
-Create a `.env` file in the root of the project by copying the example template.
-
-```bash
-# You can manually create a .env file
+### 4. Configure .env
+env
 ```
-
-Add the following configuration to your `.env` file. These are the default values.
-
-```env
-# .env
-
-# Data and DB paths
 DATA_DIR="./data"
 CHROMA_DB_DIR="./chroma_db"
-
-# Redis configuration
 REDIS_URL="redis://localhost:6379/0"
-
-# Ollama configuration
+MONGO_URL=mongodb://localhost:27017
 OLLAMA_BASE_URL="http://localhost:11434"
 OLLAMA_MODEL="llama3.2"
-
-# Server configuration
 HOST="0.0.0.0"
 PORT="8000"
 ```
-
-## Usage
-
-### 1. Run the Application
-
-Start the FastAPI server using Uvicorn.
-
+### 5. Start FastAPI server
 ```bash
-uvicorn backend.main:app --reload
+uvicorn backend.main:app --reload --port "${PORT:-8000}"
+```
+### 6. Use the API
+```
+POST /upload/ – Upload your PDF or TXT file
+
+GET /query/?q=<your question> – Ask anything! The assistant will detect relevant documents, retrieve related chunks, and answer using LLM.
 ```
 
-The server will be available at `http://localhost:8000`.
-
-### 2. Upload a File
-
-Use `curl` or any API client to upload a PDF document.
-
-```bash
-curl -X POST -F "file=@/path/to/your/document.pdf" http://localhost:8000/upload/
+### 📂 Repository Structure
+pgsql
+```
+AI-Assistant-RAG/
+├── backend/
+│   ├── api/                # File upload & query handlers
+│   ├── db/                 # MongoDB client & document repo
+│   ├── ingestion/          # File reading & chunking
+│   ├── retrieval/          # ChromaDB wrapper & retrieval logic
+│   ├── llm/                # Ollama & chain logic for summarization & QA
+│   ├── cache/              # Redis caching utilities
+│   ├── utils/              # File saving, logging helpers
+│   └── main.py             # FastAPI app
+├── requirements.txt
+└── README.md
 ```
 
-On success, you will receive a confirmation message.
+### 🔗 Acknowledgments & References
 
-### 3. Query Your Document
+* RAG architecture with LangChain and Ollama
+* Dictionary and memory architecture with MongoDB and Redis
+* Prompt enrichment and document-aware QA
 
-Ask a question related to the content of your uploaded document(s).
-
-```bash
-curl "http://localhost:8000/query/?q=What+is+this+document+about?"
-```
-
-The API will return a JSON response with the answer and the source (either `llm` or `cache`).
-
-```json
-{
-  "answer": "The document is about...",
-  "source": "llm"
-}
-```
