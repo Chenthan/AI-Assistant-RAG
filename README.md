@@ -93,7 +93,7 @@ REDIS_URL="redis://localhost:6379/0"
 
 # Ollama configuration
 OLLAMA_BASE_URL="http://localhost:11434"
-OLLAMA_MODEL="mistral"
+OLLAMA_MODEL="llama3.2"
 
 # Server configuration
 HOST="0.0.0.0"

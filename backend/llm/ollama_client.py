@@ -1,3 +1,7 @@
+"""
+Ollama LLM client initialization module.
+Initializes the Ollama LLM for use throughout the application.
+"""
 import os
 from langchain_community.llms import Ollama
 from backend.utils.logger import logger

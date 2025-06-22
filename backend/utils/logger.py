@@ -1,3 +1,7 @@
+"""
+Logger configuration for the Personal AI Assistant project.
+Sets up a consistent logging format and log level for the application.
+"""
 import logging
 
 logging.basicConfig(
