@@ -15,7 +15,7 @@ _db = Chroma(
 )
 
 
-def get_retriever(k: int = 5, document_name: str | None = None):
+def get_retriever(k: int = 15, document_name: str | None = None):
     """
     Returns a retriever object for querying the vector store.
     Args:

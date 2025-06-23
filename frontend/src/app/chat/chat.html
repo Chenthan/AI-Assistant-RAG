@@ -1,0 +1,14 @@
+<div class="chat-container">
+  <div class="messages">
+    <div *ngFor="let msg of messages" [ngClass]="msg.sender">
+      <strong>{{ msg.sender === 'user' ? 'You' : 'Assistant' }}:</strong> {{ msg.text }}
+    </div>
+    <span *ngIf="loading">Assistant is typing...</span>
+    <span *ngIf="error" style="color:red;">{{error}}</span>
+  </div>
+  <form (ngSubmit)="sendMessage()" #chatForm="ngForm">
+    <input type="text" [(ngModel)]="userInput" name="userInput" required [disabled]="loading" placeholder="Type your message..." />
+    <button type="submit" [disabled]="loading || !userInput.trim()">Send</button>
+  </form>
+  
+</div>

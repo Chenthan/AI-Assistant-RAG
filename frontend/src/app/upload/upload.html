@@ -1,0 +1,11 @@
+<h3>Upload Document</h3>
+<form (ngSubmit)="onUpload()" #uploadForm="ngForm" class="upload-inline-form">
+  <label class="upload-icon-btn" title="Upload Document">
+    <input type="file" (change)="onFileSelected($event)" accept=".pdf,.txt" style="display:none;" />
+    <span class="material-icons">attach_file</span>
+  </label>
+  <button type="submit" [disabled]="!selectedFile || uploading" style="display:none;">Upload</button>
+  <span *ngIf="uploading">Uploading...</span>
+  <span *ngIf="uploadSuccess" style="color:green;">Upload successful!</span>
+  <span *ngIf="uploadError" style="color:red;">{{uploadError}}</span>
+</form>
